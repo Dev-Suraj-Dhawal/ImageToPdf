@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF Generator - Enhanced</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="./css/beauty.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <section class="tool_container">
+        <div class="container">
+            <div class="menu_bar">
+                <button id="back-btn" class="icon-btn" aria-label="Go back">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div class="menu-actions">
+                    <button id="settingsBtn" class="icon-btn" aria-label="Settings">
+                        <span class="material-symbols-outlined">settings</span>
+                    </button>
+                    <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+
+            <main id="main-content" class="main-content">
+                <div class="upload-container">
+                    <div class="heading1">
+                        <h1>Upload Images</h1>
+                        <p class="subtitle">Drag & drop or click to upload</p>
+                    </div>
+
+                    <div class="child-upload-container" id="dropZone" role="button" tabindex="0">
+                        <input type="file" id="imageUpload" multiple accept="image/*" aria-label="Choose images">
+                        <div class="drop-zone-content">
+                            <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+                            <p class="drop-text">Drag & Drop images here</p>
+                            <p class="drop-text-or">or</p>
+                            <button type="button" class="browse-btn" id="browseBtn">Browse Files</button>
+                            <p class="file-info">JPG, PNG, GIF, WebP (Max 10MB each, 50 images max)</p>
+                        </div>
+                        <div id="imagePreview" class="image-preview-grid"></div>
+                    </div>
+                    
+                    <div class="controls">
+                        <div class="generate-area">
+                            <button id="generatePdf" class="primary" disabled>
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                                Generate PDF
+                            </button>
+                            <div id="inlineLoader" class="inline-loader hidden" role="status">
+                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                            </div>
+                        </div>
+                        <button id="clearAll" class="ghost" disabled>
+                            <span class="material-symbols-outlined">delete</span>
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="preview-container">
+                    <div class="heading2">
+                        <h1>PDF Preview</h1>
+                        <div class="preview-controls">
+                            <button id="zoomOut" class="icon-btn-small" disabled>
+                                <span class="material-symbols-outlined">zoom_out</span>
+                            </button>
+                            <span id="zoomLevel" class="zoom-level">100%</span>
+                            <button id="zoomIn" class="icon-btn-small" disabled>
+                                <span class="material-symbols-outlined">zoom_in</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="pdfPreview" class="pdf-preview-container"></div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal" role="dialog" hidden style="display: none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>PDF Settings</h2>
+                <button class="close-btn" id="closeSettings">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="pageSize">Page Size:</label>
+                    <select id="pageSize">
+                        <option value="a4">A4</option>
+                        <option value="letter">Letter</option>
+                        <option value="legal">Legal</option>
+                        <option value="a3">A3</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="orientation">Orientation:</label>
+                    <select id="orientation">
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape">Landscape</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="imageQuality">Quality:</label>
+                    <input type="range" id="imageQuality" min="0.1" max="1" step="0.1" value="0.92">
+                    <span id="qualityValue">92%</span>
+                </div>
+                <div class="setting-group">
+                    <label for="margin">Margin (pt):</label>
+                    <input type="number" id="margin" min="0" max="100" value="20">
+                </div>
+                <div class="setting-group">
+                    <label for="imagesPerPage">Images/Page:</label>
+                    <select id="imagesPerPage">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="filename">Filename:</label>
+                    <input type="text" id="filename" value="generated">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveSettings" class="primary">Save</button>
+                <button id="resetSettings" class="ghost">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal" role="dialog" hidden style="display: none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="editTitle">Edit Image</h2>
+                <button class="close-btn" id="closeEdit">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="modal-body edit-modal-body">
+                <div class="edit-preview">
+                    <img id="editImage" src="" alt="Editing">
+                </div>
+                <div class="edit-controls">
+                    <button class="icon-btn" id="rotateLeft" title="Rotate Left">
+                        <span class="material-symbols-outlined">rotate_left</span>
+                    </button>
+                    <button class="icon-btn" id="rotateRight" title="Rotate Right">
+                        <span class="material-symbols-outlined">rotate_right</span>
+                    </button>
+                    <button class="icon-btn" id="flipH" title="Flip Horizontal">
+                        <span class="material-symbols-outlined">flip</span>
+                    </button>
+                    <button class="icon-btn" id="flipV" title="Flip Vertical">
+                        <span class="material-symbols-outlined">flip</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="applyEdit" class="primary">Apply</button>
+                <button id="cancelEdit" class="ghost">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loaderOverlay" class="loader-overlay" style="display:none">
+        <div class="loader-card">
+            <div class="spinner"></div>
+            <div class="loader-text" id="loaderText">Processing...</div>
+            <div class="progress">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <div class="loader-subtext" id="loaderSub">Please wait</div>
+            <button id="cancelOp" class="ghost cancel-btn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification" hidden style="display: none"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="./js/logic.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "imagetopdf",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Suraj Dhawal",
+  "license": "ISC",
+  "dependencies": {
+    "cros": "^1.1.0",
+    "express": "^5.1.0",
+    "node": "^25.2.1"
+  },
+  "description": "imagetopdf"
+}
